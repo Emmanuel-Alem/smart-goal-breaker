@@ -5,7 +5,13 @@ from .config import get_settings
 
 settings = get_settings()
 
-engine = create_async_engine(settings.DATABASE_URL, echo=False)
+# Remove unsupported params from Neon connection string for asyncpg
+database_url = settings.DATABASE_URL
+if "channel_binding=require" in database_url:
+    database_url = database_url.replace("channel_binding=require", "")
+    database_url = database_url.replace("&&", "&").rstrip("&").rstrip("?")
+
+engine = create_async_engine(database_url, echo=False)
 async_session = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
 
