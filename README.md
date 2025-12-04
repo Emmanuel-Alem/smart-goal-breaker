@@ -1,24 +1,48 @@
-# Smart Goal Breaker
+# 🎯 Smart Goal Breaker
 
-AI-powered goal breakdown app that converts vague goals into 5 actionable steps.
+> AI-powered goal breakdown app that converts vague goals into 5 actionable steps.
 
-## Tech Stack
-- **Backend**: Python FastAPI + SQLAlchemy + Alembic
-- **Frontend**: Next.js 16 + shadcn/ui + Tailwind CSS
-- **Database**: PostgreSQL
-- **AI**: Google Gemini
+![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?logo=fastapi)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-4169E1?logo=postgresql)
+![Google Gemini](https://img.shields.io/badge/Gemini-AI-4285F4?logo=google)
 
-## Features
-- Enter a vague goal and get 5 actionable steps
-- AI-generated complexity score (1-10)
-- Save goals to PostgreSQL database
-- Delete goals
-- Loading skeletons and empty states
-- Input validation (3-500 characters)
-- Retry logic for AI failures
-- Health check with DB verification
+## 📸 Screenshots
 
-## Quick Start
+| New Goal View | History View | Settings |
+|---------------|--------------|----------|
+| Enter your goal and get AI breakdown | View all saved goals | Theme, export, and more |
+
+## ✨ Features
+
+### Core
+- 🤖 **AI Goal Breakdown** - Enter a vague goal, get 5 actionable steps
+- 📊 **Complexity Score** - AI rates difficulty from 1-10 (Easy/Medium/Hard)
+- 💾 **Persistent Storage** - Goals saved to PostgreSQL database
+- ✏️ **Edit & Regenerate** - Modify goals and get new AI breakdown
+
+### UI/UX
+- 🌓 **Dark/Light Theme** - Toggle with persistence
+- 📱 **Modern Design** - Claude-inspired UI with sidebar navigation
+- ⏳ **Loading States** - Skeletons and animations
+- ✅ **Input Validation** - 3-500 character limit
+
+### Data Management
+- 📥 **Export Goals** - Download as JSON, CSV, PDF, or DOC
+- 🗑️ **Delete Goals** - Remove individual or all goals
+- 👁️ **Toggle Complexity** - Show/hide complexity badges
+
+## 🛠️ Tech Stack
+
+| Layer | Technology |
+|-------|------------|
+| **Frontend** | Next.js 16, React 19, Tailwind CSS, shadcn/ui |
+| **Backend** | Python, FastAPI, SQLAlchemy, Alembic |
+| **Database** | PostgreSQL with asyncpg |
+| **AI** | Google Gemini 2.0 Flash |
+| **Deployment** | Docker, Vercel, Render/Railway |
+
+## 🚀 Quick Start
 
 ### Option 1: Docker Compose (Recommended)
 ```bash
@@ -75,17 +99,19 @@ npm run dev
 ```
 Frontend runs at: http://localhost:3000
 
-## API Endpoints
+## 📡 API Endpoints
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | POST | `/api/goals/` | Create goal + AI breakdown |
 | GET | `/api/goals/` | List all goals |
 | GET | `/api/goals/{id}` | Get single goal |
+| PUT | `/api/goals/{id}` | Update goal + regenerate steps |
 | DELETE | `/api/goals/{id}` | Delete a goal |
+| DELETE | `/api/goals/` | Delete all goals |
 | GET | `/health` | Health check with DB status |
 
-## Environment Variables
+## 🔐 Environment Variables
 
 ### Backend (.env)
 ```
@@ -99,15 +125,14 @@ FRONTEND_URL=http://localhost:3000
 NEXT_PUBLIC_API_URL=http://localhost:8000
 ```
 
-## Testing
+## 🧪 Testing
 
-### Backend Tests
 ```bash
 cd backend
 pytest
 ```
 
-## Deployment
+## ☁️ Deployment
 
 ### Frontend (Vercel)
 1. Push to GitHub
@@ -131,7 +156,8 @@ docker-compose up -d --build
 docker-compose logs -f
 ```
 
-## Database Migrations
+## 🗃️ Database Migrations
+
 ```bash
 cd backend
 
@@ -144,3 +170,44 @@ alembic upgrade head
 # Rollback
 alembic downgrade -1
 ```
+
+## 📁 Project Structure
+
+```
+smart-goal-breaker/
+├── backend/
+│   ├── app/
+│   │   ├── main.py           # FastAPI app entry
+│   │   ├── models.py         # SQLAlchemy models
+│   │   ├── schemas.py        # Pydantic schemas
+│   │   ├── database.py       # DB connection
+│   │   ├── config.py         # Settings & validation
+│   │   ├── routes/
+│   │   │   └── goals.py      # API endpoints
+│   │   └── services/
+│   │       └── ai_service.py # Gemini integration
+│   ├── alembic/              # DB migrations
+│   ├── tests/                # Pytest tests
+│   ├── Dockerfile
+│   └── requirements.txt
+├── frontend/
+│   ├── src/
+│   │   ├── app/              # Next.js pages
+│   │   ├── components/       # React components
+│   │   │   ├── ui/           # shadcn/ui components
+│   │   │   ├── goal/         # Goal-related components
+│   │   │   └── layout/       # Layout components
+│   │   └── lib/              # Utilities & API
+│   ├── Dockerfile
+│   └── package.json
+├── docker-compose.yml
+└── README.md
+```
+
+## 📄 License
+
+MIT License - feel free to use this project for learning or building upon it.
+
+---
+
+Built with ❤️ using FastAPI, Next.js, and Google Gemini
