@@ -5,7 +5,7 @@ import { GoalForm, TaskList, EmptyState, GoalSkeleton } from "@/components/goal"
 import { Sidebar, SettingsPanel, MobileHeader, type ViewType } from "@/components/layout";
 import { createGoal, getGoals, deleteGoal, deleteAllGoals, updateGoal, type Goal } from "@/lib/api";
 import { useSettings } from "@/lib/settings-context";
-import { Sparkles, History } from "lucide-react";
+import { Sparkles, History, AlertCircle, Lightbulb } from "lucide-react";
 
 export default function Home() {
   const [goals, setGoals] = useState<Goal[]>([]);
@@ -133,10 +133,32 @@ export default function Home() {
               {/* Goal Input */}
               <GoalForm onSubmit={handleSubmit} isLoading={isLoading} />
 
-              {/* Error Message */}
+              {/* Error Messages */}
               {error && (
-                <div className="mt-4 w-full max-w-2xl rounded-xl bg-destructive/10 border border-destructive/20 p-4 text-destructive text-sm">
-                  {error}
+                <div className="mt-4 w-full max-w-2xl space-y-3">
+                  {/* Error Card */}
+                  <div className="rounded-xl bg-destructive/10 border border-destructive/20 p-3 md:p-4">
+                    <div className="flex items-start gap-3">
+                      <AlertCircle className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs md:text-sm text-destructive break-words">
+                          {error}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Hint Card */}
+                  <div className="rounded-xl bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 p-3 md:p-4">
+                    <div className="flex items-start gap-3">
+                      <Lightbulb className="h-5 w-5 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs md:text-sm text-blue-700 dark:text-blue-300 break-words">
+                          Try switching to a different AI model from the settings and try again.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
 
@@ -176,10 +198,32 @@ export default function Home() {
                   </div>
                 </div>
 
-                {/* Error Message */}
+                {/* Error Messages */}
                 {error && (
-                  <div className="mb-6 rounded-xl bg-destructive/10 border border-destructive/20 p-4 text-destructive text-sm">
-                    {error}
+                  <div className="mb-6 space-y-3">
+                    {/* Error Card */}
+                    <div className="rounded-xl bg-destructive/10 border border-destructive/20 p-3 md:p-4">
+                      <div className="flex items-start gap-3">
+                        <AlertCircle className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs md:text-sm text-destructive break-words">
+                            {error}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Hint Card */}
+                    <div className="rounded-xl bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 p-3 md:p-4">
+                      <div className="flex items-start gap-3">
+                        <Lightbulb className="h-5 w-5 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs md:text-sm text-blue-700 dark:text-blue-300 break-words">
+                            Try switching to a different AI model from the settings and try again.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 )}
 

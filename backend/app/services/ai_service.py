@@ -69,6 +69,74 @@ class RateLimitExceededError(Exception):
     pass
 
 
+def simplify_error_message(error: Exception) -> str:
+    """Convert technical error messages to user-friendly messages.
+    
+    Handles all official Gemini API error codes based on Google documentation:
+    - 404 NOT_FOUND: Resource/model not found
+    - 429 RESOURCE_EXHAUSTED: Quota or rate limit exceeded
+    - 400 INVALID_ARGUMENT/FAILED_PRECONDITION: Bad request
+    - 403 PERMISSION_DENIED: API key lacks permissions
+    - 500 INTERNAL: Server error
+    - 503 UNAVAILABLE: Service overloaded
+    """
+    error_str = str(error)
+    error_lower = error_str.lower()
+    
+    # === HTTP 404 - NOT_FOUND ===
+    if "404" in error_str:
+        if any(kw in error_lower for kw in ["not found", "is not found", "not supported"]):
+            return "The selected AI model is not available. Please try a different model from the settings."
+        return "Requested resource not found. Please check your request."
+    
+    # === HTTP 429 - RESOURCE_EXHAUSTED ===
+    if "429" in error_str:
+        # Subcase A: Quota exhausted (free tier limit reached)
+        if "limit: 0" in error_lower or "quota exceeded" in error_lower:
+            return "API quota exceeded. Your free tier limit has been reached. Try again tomorrow or upgrade your plan."
+        # Subcase B: Rate limit (too many requests per minute)
+        if any(kw in error_lower for kw in ["resource exhausted", "too many requests", "rate limit"]):
+            return "Too many requests. Please wait a few seconds and try again."
+        # Generic 429
+        return "API rate limit reached. Please wait a moment and try again."
+    
+    # === HTTP 400 - BAD REQUEST ===
+    if "400" in error_str:
+        if "failed_precondition" in error_lower or "free tier unavailable" in error_lower:
+            return "API not available in your region. Enable billing to continue."
+        if "invalid_argument" in error_lower:
+            return "Invalid request format. Please try again."
+        return "Bad request. Please check your input."
+    
+    # === HTTP 403 - PERMISSION_DENIED ===
+    if "403" in error_str or "permission_denied" in error_lower:
+        return "API key doesn't have permission. Please check your API key."
+    
+    # === HTTP 500 - INTERNAL ERROR ===
+    if "500" in error_str or ("internal" in error_lower and "error" in error_lower):
+        return "Server error occurred. Please try again in a moment."
+    
+    # === HTTP 503 - SERVICE UNAVAILABLE ===
+    if "503" in error_str or "unavailable" in error_lower:
+        return "Service temporarily unavailable. Please try again later."
+    
+    # === GENERIC PATTERNS (fallback for non-HTTP errors) ===
+    
+    # API key errors (not caught by 403)
+    if any(kw in error_lower for kw in ["api key", "api_key_invalid", "api key not found"]):
+        return "Invalid or missing API key. Please check your configuration."
+    
+    # Network errors
+    if any(kw in error_lower for kw in ["connection", "timeout", "network"]):
+        return "Network error. Please check your connection and try again."
+    
+    # Truncate long messages
+    if len(error_str) > 200:
+        return error_str[:197] + "..."
+    
+    return error_str
+
+
 AVAILABLE_MODELS = [
     {"id": "gemini-2.0-flash", "name": "Gemini 2.0 Flash", "description": "Fast, latest stable"},
     {"id": "gemini-2.5-flash", "name": "Gemini 2.5 Flash", "description": "Newest, experimental"},
@@ -149,9 +217,10 @@ async def break_down_goal(goal: str, model_name: str | None = None, max_retries:
             
             # Check if it's a Google API quota/rate limit error
             error_str = str(e).lower()
-            if any(keyword in error_str for keyword in ["quota", "rate limit", "429", "resource exhausted", "api key"]):
-                # Don't retry on quota errors
-                raise RateLimitExceededError(f"Google API error: {str(e)}")
+            if any(keyword in error_str for keyword in ["quota", "rate limit", "429", "404", "resource exhausted", "api key"]):
+                # Don't retry on quota errors, use simplified message
+                friendly_message = simplify_error_message(e)
+                raise RateLimitExceededError(friendly_message)
             
             if attempt < max_retries - 1:
                 await asyncio.sleep(1 * (attempt + 1))  # Exponential backoff

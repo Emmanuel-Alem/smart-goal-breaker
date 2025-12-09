@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 
 type Theme = "light" | "dark";
 
-const DEFAULT_MODEL = "gemini-2.0-flash";
+const DEFAULT_MODEL = "gemini-2.5-flash";
 
 interface SettingsContextType {
   theme: Theme;
