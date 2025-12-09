@@ -1,12 +1,13 @@
 "use client";
 
-import { X, Sun, Moon, FileJson, FileSpreadsheet, FileText, File, Trash2, AlertTriangle } from "lucide-react";
+import { X, Sun, Moon, FileJson, FileSpreadsheet, FileText, File, Trash2, AlertTriangle, Cpu, Activity } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { useSettings } from "@/lib/settings-context";
 import { exportAsJSON, exportAsCSV, exportAsPDF, exportAsDOC } from "@/lib/export-utils";
-import type { Goal } from "@/lib/api";
-import { useState } from "react";
+import type { Goal, AIModel, RateLimitStatus } from "@/lib/api";
+import { getModels, getRateLimitStatus } from "@/lib/api";
+import { useState, useEffect } from "react";
 
 interface SettingsPanelProps {
   isOpen: boolean;
@@ -16,9 +17,18 @@ interface SettingsPanelProps {
 }
 
 export function SettingsPanel({ isOpen, onClose, goals, onClearHistory }: SettingsPanelProps) {
-  const { theme, setTheme, showComplexity, setShowComplexity } = useSettings();
+  const { theme, setTheme, showComplexity, setShowComplexity, selectedModel, setSelectedModel } = useSettings();
   const [showConfirmClear, setShowConfirmClear] = useState(false);
   const [isClearing, setIsClearing] = useState(false);
+  const [models, setModels] = useState<AIModel[]>([]);
+  const [rateLimitStatus, setRateLimitStatus] = useState<RateLimitStatus | null>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      getModels().then(setModels).catch(console.error);
+      getRateLimitStatus().then(setRateLimitStatus).catch(console.error);
+    }
+  }, [isOpen]);
 
   const handleClearHistory = async () => {
     setIsClearing(true);
@@ -122,6 +132,76 @@ export function SettingsPanel({ isOpen, onClose, goals, onClearHistory }: Settin
                 </div>
                 <Switch checked={showComplexity} onCheckedChange={setShowComplexity} />
               </div>
+            </section>
+
+            {/* AI Model */}
+            <section>
+              <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide mb-4">
+                <Cpu className="h-4 w-4 inline mr-2" />
+                AI Model
+              </h3>
+              <select
+                value={selectedModel}
+                onChange={(e) => setSelectedModel(e.target.value)}
+                className="w-full px-3 py-2.5 rounded-lg border border-border bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+              >
+                {models.map((model) => (
+                  <option key={model.id} value={model.id}>
+                    {model.name}
+                  </option>
+                ))}
+              </select>
+              {models.find(m => m.id === selectedModel) && (
+                <p className="text-xs text-muted-foreground mt-2">
+                  {models.find(m => m.id === selectedModel)?.description}
+                </p>
+              )}
+            </section>
+
+            {/* API Usage */}
+            <section>
+              <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide mb-4">
+                <Activity className="h-4 w-4 inline mr-2" />
+                API Usage
+              </h3>
+              {rateLimitStatus ? (
+                <div className="space-y-4">
+                  <div>
+                    <div className="flex justify-between text-sm mb-1">
+                      <span className="text-muted-foreground">This minute</span>
+                      <span className="text-foreground font-medium">
+                        {rateLimitStatus.requests_this_minute} / {rateLimitStatus.max_per_minute}
+                      </span>
+                    </div>
+                    <div className="h-2 bg-secondary rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-primary transition-all duration-300"
+                        style={{
+                          width: `${(rateLimitStatus.requests_this_minute / rateLimitStatus.max_per_minute) * 100}%`,
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex justify-between text-sm mb-1">
+                      <span className="text-muted-foreground">Today</span>
+                      <span className="text-foreground font-medium">
+                        {rateLimitStatus.requests_today} / {rateLimitStatus.max_per_day}
+                      </span>
+                    </div>
+                    <div className="h-2 bg-secondary rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-primary transition-all duration-300"
+                        style={{
+                          width: `${(rateLimitStatus.requests_today / rateLimitStatus.max_per_day) * 100}%`,
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">Loading usage data...</p>
+              )}
             </section>
 
             {/* Export */}

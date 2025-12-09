@@ -17,6 +17,7 @@ class TaskResponse(TaskBase):
 
 class GoalCreate(BaseModel):
     title: str
+    model: str | None = None
 
 
 class GoalResponse(BaseModel):

@@ -7,16 +7,22 @@ from typing import List
 from ..database import get_db
 from ..models import Goal, Task
 from ..schemas import GoalCreate, GoalResponse
-from ..services.ai_service import break_down_goal
+from ..services.ai_service import break_down_goal, RateLimitExceededError, rate_limiter, get_available_models
 
 router = APIRouter(prefix="/api/goals", tags=["goals"])
+
+
+@router.get("/models")
+async def get_models():
+    """Get list of available AI models."""
+    return get_available_models()
 
 
 @router.post("/", response_model=GoalResponse)
 async def create_goal(goal_data: GoalCreate, db: AsyncSession = Depends(get_db)):
     try:
         # Get AI breakdown
-        ai_result = await break_down_goal(goal_data.title)
+        ai_result = await break_down_goal(goal_data.title, model_name=goal_data.model)
 
         # Create goal
         goal = Goal(
@@ -46,6 +52,8 @@ async def create_goal(goal_data: GoalCreate, db: AsyncSession = Depends(get_db))
 
         return goal
 
+    except RateLimitExceededError as e:
+        raise HTTPException(status_code=429, detail=str(e))
     except Exception as e:
         await db.rollback()
         raise HTTPException(status_code=500, detail=str(e))
@@ -86,7 +94,7 @@ async def update_goal(goal_id: int, goal_data: GoalCreate, db: AsyncSession = De
             raise HTTPException(status_code=404, detail="Goal not found")
 
         # Get new AI breakdown
-        ai_result = await break_down_goal(goal_data.title)
+        ai_result = await break_down_goal(goal_data.title, model_name=goal_data.model)
 
         # Update goal
         goal.title = goal_data.title
@@ -117,6 +125,8 @@ async def update_goal(goal_id: int, goal_data: GoalCreate, db: AsyncSession = De
 
     except HTTPException:
         raise
+    except RateLimitExceededError as e:
+        raise HTTPException(status_code=429, detail=str(e))
     except Exception as e:
         await db.rollback()
         raise HTTPException(status_code=500, detail=str(e))
@@ -149,3 +159,9 @@ async def delete_all_goals(db: AsyncSession = Depends(get_db)):
     await db.commit()
 
     return {"message": f"Deleted {len(goals)} goals successfully"}
+
+
+@router.get("/rate-limit/status")
+async def get_rate_limit_status():
+    """Get current rate limit usage."""
+    return rate_limiter.get_usage()

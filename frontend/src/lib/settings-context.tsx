@@ -4,11 +4,15 @@ import { createContext, useContext, useEffect, useState } from "react";
 
 type Theme = "light" | "dark";
 
+const DEFAULT_MODEL = "gemini-2.0-flash";
+
 interface SettingsContextType {
   theme: Theme;
   setTheme: (theme: Theme) => void;
   showComplexity: boolean;
   setShowComplexity: (show: boolean) => void;
+  selectedModel: string;
+  setSelectedModel: (model: string) => void;
 }
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
@@ -16,12 +20,14 @@ const SettingsContext = createContext<SettingsContextType | undefined>(undefined
 export function SettingsProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<Theme>("dark");
   const [showComplexity, setShowComplexityState] = useState(true);
+  const [selectedModel, setSelectedModelState] = useState(DEFAULT_MODEL);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     // Load settings from localStorage on mount
     const savedTheme = localStorage.getItem("theme") as Theme;
     const savedShowComplexity = localStorage.getItem("showComplexity");
+    const savedModel = localStorage.getItem("selectedModel");
 
     if (savedTheme) {
       setThemeState(savedTheme);
@@ -32,6 +38,10 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
 
     if (savedShowComplexity !== null) {
       setShowComplexityState(savedShowComplexity === "true");
+    }
+
+    if (savedModel) {
+      setSelectedModelState(savedModel);
     }
 
     setMounted(true);
@@ -61,6 +71,11 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem("showComplexity", String(show));
   };
 
+  const setSelectedModel = (model: string) => {
+    setSelectedModelState(model);
+    localStorage.setItem("selectedModel", model);
+  };
+
   // Prevent flash of wrong theme
   if (!mounted) {
     return null;
@@ -73,6 +88,8 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
         setTheme,
         showComplexity,
         setShowComplexity,
+        selectedModel,
+        setSelectedModel,
       }}
     >
       {children}

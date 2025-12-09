@@ -15,7 +15,7 @@ export default function Home() {
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const { showComplexity } = useSettings();
+  const { showComplexity, selectedModel } = useSettings();
 
   useEffect(() => {
     loadGoals();
@@ -37,7 +37,7 @@ export default function Home() {
     setError(null);
 
     try {
-      const newGoal = await createGoal(title);
+      const newGoal = await createGoal(title, selectedModel);
       setLatestGoal(newGoal);
       setGoals((prev) => [newGoal, ...prev]);
     } catch (err) {
@@ -71,7 +71,7 @@ export default function Home() {
   };
 
   const handleEdit = async (id: number, newTitle: string) => {
-    const updatedGoal = await updateGoal(id, newTitle);
+    const updatedGoal = await updateGoal(id, newTitle, selectedModel);
     setGoals((prev) => prev.map((g) => (g.id === id ? updatedGoal : g)));
     if (latestGoal?.id === id) {
       setLatestGoal(updatedGoal);
