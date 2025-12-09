@@ -40,7 +40,7 @@
 | **Backend** | Python, FastAPI, SQLAlchemy, Alembic |
 | **Database** | PostgreSQL with asyncpg |
 | **AI** | Google Gemini 2.0 Flash |
-| **Deployment** | Docker, Vercel, Render/Railway |
+| **Deployment** | Vercel -> Frontend, Render -> BackEnd, Neon -> DB, Docker(local setup) |
 
 ## 🚀 Quick Start
 
