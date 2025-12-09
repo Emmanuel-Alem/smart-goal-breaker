@@ -21,16 +21,54 @@
 - 💾 **Persistent Storage** - Goals saved to PostgreSQL database
 - ✏️ **Edit & Regenerate** - Modify goals and get new AI breakdown
 
+### AI & Performance
+- 🔄 **Dynamic Model Selection** - Choose between multiple Gemini models (2.0 Flash, 2.5 Flash, 1.5 Flash, 1.5 Pro)
+- 📈 **API Usage Statistics** - Real-time monitoring of requests per minute and daily quota
+- ⚡ **Rate Limiting** - Built-in protection (10 req/min, 500 req/day) to prevent quota exhaustion
+- 🛡️ **Smart Error Handling** - User-friendly messages for all API errors with helpful hints
+
 ### UI/UX
 - 🌓 **Dark/Light Theme** - Toggle with persistence
-- 📱 **Modern Design** - Claude-inspired UI with sidebar navigation
-- ⏳ **Loading States** - Skeletons and animations
-- ✅ **Input Validation** - 3-500 character limit
+- 📱 **Fully Mobile Responsive** - Hamburger menu, adaptive layouts, touch-friendly interface
+- 🎨 **Modern Design** - Claude-inspired UI with sidebar navigation
+- ⏳ **Loading States** - Skeletons and smooth animations
+- ✅ **Input Validation** - 3-500 character limit with real-time feedback
+- 💡 **Contextual Hints** - Helpful suggestions displayed alongside error messages
 
 ### Data Management
 - 📥 **Export Goals** - Download as JSON, CSV, PDF, or DOC
 - 🗑️ **Delete Goals** - Remove individual or all goals
 - 👁️ **Toggle Complexity** - Show/hide complexity badges
+- 🔍 **Dual Views** - Switch between New Goal creation and History
+
+## 🌟 Key Highlights
+
+### 🎯 AI Model Selection
+Switch between different Gemini models directly from the settings:
+- **Gemini 2.5 Flash** - Newest, experimental (default)
+- **Gemini 2.0 Flash** - Fast, latest stable
+- **Gemini 1.5 Flash** - Previous generation, reliable
+- **Gemini 1.5 Pro** - Higher quality, slower responses
+
+### 📊 Real-Time API Monitoring
+Track your API usage with live statistics:
+- Requests used this minute (out of 10)
+- Daily requests (out of 500)
+- Visual progress bars in settings panel
+
+### 📱 Mobile-First Design
+Seamless experience across all devices:
+- Responsive hamburger menu navigation
+- Touch-optimized buttons and cards
+- Text wrapping for long error messages
+- Adaptive spacing and typography
+
+### 💬 User-Friendly Error Messages
+Clear, actionable error messages with helpful hints:
+```
+⚠️ API quota exceeded. Your free tier limit has been reached.
+💡 Try switching to a different AI model from the settings and try again.
+```
 
 ## 🛠️ Tech Stack
 
@@ -39,7 +77,7 @@
 | **Frontend** | Next.js 16, React 19, Tailwind CSS, shadcn/ui |
 | **Backend** | Python, FastAPI, SQLAlchemy, Alembic |
 | **Database** | PostgreSQL with asyncpg |
-| **AI** | Google Gemini 2.0 Flash |
+| **AI** | Google Gemini (2.0 Flash, 2.5 Flash, 1.5 Flash, 1.5 Pro) |
 | **Deployment** | Vercel -> Frontend, Render -> BackEnd, Neon -> DB, Docker(local setup) |
 
 ## 🚀 Quick Start
@@ -103,12 +141,14 @@ Frontend runs at: http://localhost:3000
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/api/goals/` | Create goal + AI breakdown |
+| POST | `/api/goals/` | Create goal + AI breakdown (with optional model selection) |
 | GET | `/api/goals/` | List all goals |
 | GET | `/api/goals/{id}` | Get single goal |
-| PUT | `/api/goals/{id}` | Update goal + regenerate steps |
+| PUT | `/api/goals/{id}` | Update goal + regenerate steps (with optional model) |
 | DELETE | `/api/goals/{id}` | Delete a goal |
 | DELETE | `/api/goals/` | Delete all goals |
+| GET | `/api/goals/models` | List available AI models |
+| GET | `/api/goals/rate-limit/status` | Get current API usage statistics |
 | GET | `/health` | Health check with DB status |
 
 ## 🔐 Environment Variables
