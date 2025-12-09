@@ -76,7 +76,7 @@ AVAILABLE_MODELS = [
     {"id": "gemini-1.5-pro", "name": "Gemini 1.5 Pro", "description": "Higher quality, slower"},
 ]
 
-DEFAULT_MODEL = "gemini-2.0-flash"
+DEFAULT_MODEL = "gemini-2.5-flash"
 
 
 def get_available_models() -> list:
