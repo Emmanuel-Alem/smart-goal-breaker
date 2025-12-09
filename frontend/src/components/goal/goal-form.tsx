@@ -60,7 +60,7 @@ export function GoalForm({ onSubmit, isLoading }: GoalFormProps) {
   return (
     <div className="w-full max-w-2xl">
       <form onSubmit={handleSubmit}>
-        <div className="relative rounded-2xl border border-border bg-card shadow-lg transition-shadow focus-within:shadow-xl focus-within:border-primary/30">
+        <div className="relative rounded-xl md:rounded-2xl border border-border bg-card shadow-lg transition-shadow focus-within:shadow-xl focus-within:border-primary/30">
           <textarea
             placeholder="What's your goal? e.g., Launch a startup, Learn a new language..."
             value={goal}
@@ -69,24 +69,24 @@ export function GoalForm({ onSubmit, isLoading }: GoalFormProps) {
             disabled={isLoading}
             maxLength={MAX_LENGTH}
             rows={3}
-            className="w-full resize-none rounded-2xl bg-transparent px-5 py-4 pr-14 text-base placeholder:text-muted-foreground focus:outline-none disabled:opacity-50"
+            className="w-full resize-none rounded-xl md:rounded-2xl bg-transparent px-4 py-3 pr-12 md:px-5 md:py-4 md:pr-14 text-sm md:text-base placeholder:text-muted-foreground focus:outline-none disabled:opacity-50"
           />
-          <div className="absolute bottom-3 right-3">
+          <div className="absolute bottom-2 right-2 md:bottom-3 md:right-3">
             <Button 
               type="submit" 
               size="icon"
               disabled={isLoading || !isValid}
-              className="h-9 w-9 rounded-xl bg-primary hover:bg-primary/90 disabled:opacity-30"
+              className="h-8 w-8 md:h-9 md:w-9 rounded-lg md:rounded-xl bg-primary hover:bg-primary/90 disabled:opacity-30"
             >
               {isLoading ? (
-                <Sparkles className="h-4 w-4 animate-pulse" />
+                <Sparkles className="h-3.5 w-3.5 md:h-4 md:w-4 animate-pulse" />
               ) : (
-                <ArrowUp className="h-4 w-4" />
+                <ArrowUp className="h-3.5 w-3.5 md:h-4 md:w-4" />
               )}
             </Button>
           </div>
         </div>
-        <div className="mt-2 flex justify-between px-2 text-xs text-muted-foreground">
+        <div className="mt-2 flex justify-between px-2 text-xs md:text-xs text-muted-foreground">
           {error ? (
             <span className="text-destructive">{error}</span>
           ) : (

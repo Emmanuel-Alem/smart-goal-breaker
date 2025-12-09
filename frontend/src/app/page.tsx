@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { GoalForm, TaskList, EmptyState, GoalSkeleton } from "@/components/goal";
-import { Sidebar, SettingsPanel, type ViewType } from "@/components/layout";
+import { Sidebar, SettingsPanel, MobileHeader, type ViewType } from "@/components/layout";
 import { createGoal, getGoals, deleteGoal, deleteAllGoals, updateGoal, type Goal } from "@/lib/api";
 import { useSettings } from "@/lib/settings-context";
 import { Sparkles, History } from "lucide-react";
@@ -15,6 +15,7 @@ export default function Home() {
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { showComplexity, selectedModel } = useSettings();
 
   useEffect(() => {
@@ -62,6 +63,7 @@ export default function Home() {
   const handleViewChange = (view: ViewType) => {
     setActiveView(view);
     setError(null);
+    setIsSidebarOpen(false); // Close sidebar on mobile after selection
   };
 
   const handleClearHistory = async () => {
@@ -87,12 +89,21 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Mobile Header */}
+      <MobileHeader
+        isSidebarOpen={isSidebarOpen}
+        onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
+        onSettingsClick={() => setIsSettingsOpen(true)}
+      />
+
       {/* Sidebar */}
       <Sidebar 
         goalCount={goals.length} 
         activeView={activeView}
         onViewChange={handleViewChange}
         onSettingsClick={() => setIsSettingsOpen(true)}
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
       />
 
       {/* Settings Panel */}
@@ -104,18 +115,18 @@ export default function Home() {
       />
 
       {/* Main Content */}
-      <main className="pl-64">
+      <main className="pt-14 md:pt-0 pl-0 md:pl-64">
         <div className="min-h-screen flex flex-col">
           {activeView === "new" ? (
             /* New Goal View */
-            <div className="flex-1 flex flex-col items-center justify-center px-8 py-12">
+            <div className="flex-1 flex flex-col items-center justify-center px-4 sm:px-6 md:px-8 py-8 md:py-12">
               {/* Animated sparkle icon */}
-              <div className="mb-6">
-                <Sparkles className="h-10 w-10 text-primary animate-pulse" />
+              <div className="mb-4 md:mb-6">
+                <Sparkles className="h-8 w-8 md:h-10 md:w-10 text-primary animate-pulse" />
               </div>
 
               {/* Greeting */}
-              <h1 className="text-4xl font-serif font-normal text-foreground mb-8 text-center">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-serif font-normal text-foreground mb-6 md:mb-8 text-center px-4">
                 {getGreeting()}! What&apos;s your goal?
               </h1>
 
@@ -150,16 +161,16 @@ export default function Home() {
             </div>
           ) : (
             /* History View */
-            <div className="flex-1 px-8 py-12">
+            <div className="flex-1 px-4 sm:px-6 md:px-8 py-8 md:py-12">
               <div className="max-w-3xl mx-auto">
                 {/* Header */}
-                <div className="flex items-center gap-3 mb-8">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
-                    <History className="h-5 w-5 text-primary" />
+                <div className="flex items-center gap-3 mb-6 md:mb-8">
+                  <div className="flex h-9 w-9 md:h-10 md:w-10 items-center justify-center rounded-xl bg-primary/10">
+                    <History className="h-4 w-4 md:h-5 md:w-5 text-primary" />
                   </div>
                   <div>
-                    <h1 className="text-2xl font-semibold text-foreground">History</h1>
-                    <p className="text-sm text-muted-foreground">
+                    <h1 className="text-xl md:text-2xl font-semibold text-foreground">History</h1>
+                    <p className="text-xs md:text-sm text-muted-foreground">
                       {goals.length} {goals.length === 1 ? 'goal' : 'goals'} saved
                     </p>
                   </div>

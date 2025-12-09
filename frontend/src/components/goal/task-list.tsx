@@ -48,8 +48,8 @@ export function TaskList({ goal, onDelete, onEdit, showComplexity = true }: Task
 
   if (isUpdating) {
     return (
-      <div className="w-full rounded-2xl border border-border bg-card p-6 shadow-sm">
-        <div className="flex items-center justify-center gap-3 py-8">
+      <div className="w-full rounded-xl md:rounded-2xl border border-border bg-card p-4 md:p-6 shadow-sm">
+        <div className="flex items-center justify-center gap-3 py-6 md:py-8">
           <RefreshCw className="h-5 w-5 text-primary animate-spin" />
           <span className="text-sm text-muted-foreground">Regenerating steps...</span>
         </div>
@@ -58,8 +58,8 @@ export function TaskList({ goal, onDelete, onEdit, showComplexity = true }: Task
   }
 
   return (
-    <div className="w-full rounded-2xl border border-border bg-card p-6 shadow-sm transition-all hover:shadow-md">
-      <div className="flex items-start justify-between gap-4 mb-5">
+    <div className="w-full rounded-xl md:rounded-2xl border border-border bg-card p-4 md:p-6 shadow-sm transition-all hover:shadow-md">
+      <div className="flex items-start justify-between gap-2 md:gap-4 mb-4 md:mb-5">
         {isEditing ? (
           <div className="flex-1 space-y-3">
             <textarea
@@ -98,8 +98,8 @@ export function TaskList({ goal, onDelete, onEdit, showComplexity = true }: Task
           </div>
         ) : (
           <>
-            <div className="flex-1">
-              <h3 className="text-lg font-semibold text-card-foreground leading-tight">
+            <div className="flex-1 min-w-0">
+              <h3 className="text-base md:text-lg font-semibold text-card-foreground leading-tight break-words">
                 {goal.title}
               </h3>
               <p className="text-xs text-muted-foreground mt-1">
@@ -110,7 +110,7 @@ export function TaskList({ goal, onDelete, onEdit, showComplexity = true }: Task
                 })}
               </p>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 md:gap-2 shrink-0">
               {showComplexity && <ComplexityBadge score={goal.complexity_score} />}
               {onEdit && (
                 <Button
@@ -137,22 +137,22 @@ export function TaskList({ goal, onDelete, onEdit, showComplexity = true }: Task
         )}
       </div>
       {!isEditing && (
-        <div className="space-y-3">
+        <div className="space-y-2.5 md:space-y-3">
           {goal.tasks
             .sort((a, b) => a.step_number - b.step_number)
             .map((task) => (
               <div 
                 key={task.id} 
-                className="flex gap-3 p-3 rounded-xl bg-secondary/50 hover:bg-secondary transition-colors"
+                className="flex gap-2.5 md:gap-3 p-2.5 md:p-3 rounded-lg md:rounded-xl bg-secondary/50 hover:bg-secondary transition-colors"
               >
-                <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-                  <CheckCircle2 className="h-4 w-4" />
+                <div className="flex h-5 w-5 md:h-6 md:w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                  <CheckCircle2 className="h-3.5 w-3.5 md:h-4 md:w-4" />
                 </div>
-                <div className="flex-1">
+                <div className="flex-1 min-w-0">
                   <span className="text-xs font-medium text-primary mb-0.5 block">
                     Step {task.step_number}
                   </span>
-                  <span className="text-sm text-card-foreground">{task.description}</span>
+                  <span className="text-xs md:text-sm text-card-foreground break-words">{task.description}</span>
                 </div>
               </div>
             ))}

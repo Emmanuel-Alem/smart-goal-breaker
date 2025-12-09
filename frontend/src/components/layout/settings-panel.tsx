@@ -74,7 +74,7 @@ export function SettingsPanel({ isOpen, onClose, goals, onClearHistory }: Settin
 
       {/* Panel */}
       <div
-        className={`fixed right-0 top-0 z-50 h-full w-80 bg-card border-l border-border shadow-xl transform transition-transform duration-300 ease-in-out ${
+        className={`fixed right-0 top-0 z-50 h-full w-full sm:w-96 md:w-80 bg-card border-l border-border shadow-xl transform transition-transform duration-300 ease-in-out ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
