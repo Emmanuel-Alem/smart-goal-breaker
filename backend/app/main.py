@@ -26,6 +26,7 @@ settings = get_settings()
 allowed_origins = [
     "http://localhost:3000",
     settings.FRONTEND_URL,
+    "https://smart-goal-breaker-psi.vercel.app/",
 ]
 
 app.add_middleware(
